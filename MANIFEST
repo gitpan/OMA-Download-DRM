@@ -1,0 +1,11 @@
+Changes
+Makefile.PL
+MANIFEST
+README
+t/OMA-DRM.t
+lib/OMA/Download/DRM.pm
+lib/OMA/Download/DRM/DRMCF.pm
+lib/OMA/Download/DRM/DRMREL.pm
+lib/OMA/Download/DRM/DRMREL/XML.pm
+lib/OMA/Download/DRM/DRMREL/WBXML.pm
+META.yml                                 Module meta-data (added by MakeMaker)

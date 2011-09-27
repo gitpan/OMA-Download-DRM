@@ -1,0 +1,25 @@
+OMA-DRM version 1.00_01
+=======================
+
+INSTALLATION
+
+To install this module type the following:
+
+   perl Makefile.PL
+   make
+   make test
+   make install
+
+DEPENDENCIES
+
+This module requires these other modules and libraries:
+
+  Crypt::Rijndael
+
+COPYRIGHT AND LICENCE
+
+
+Copyright (C) 2006-2007 by Bernard Nauwelaerts
+
+This library is proprietary commerial software. See LICENCE file or .pm files
+for further information about the licencing terms of this software.

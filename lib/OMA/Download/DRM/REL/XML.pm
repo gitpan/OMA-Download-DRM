@@ -1,15 +1,9 @@
-package OMA::Download::DRM::DRMREL::XML;
+package OMA::Download::DRM::REL::XML;
  #############################################################################
-# IT Development OMA XML DRMREL implementation                              #
+# IT Development OMA XML REL implementation                                #
 # Copyright (c) BPN 2006 All Rights reseved                                   #
 # Author  : Bernard Nauwelaerts <bpn\@it-development.be>                      #
-# LICENCE : THIS IS UNPUBLISHED PROPRIETARY SOFTWARE                          #
-#           This code is licenced to run ONLY on author's computers.          #
-#           Utilisation, selling, distribution, modification or detention of  #
-#           this code are strictly prohibited.                                #
-#           This enfringe commercial secrets and intellectual property laws.  #
-#                                                                             #
-#           In all cases these copyright and header must remain intact        #
+# LICENCE : GPL                                                               #
 #                                                                             #
  ############################################################################
 #                                                                             #
@@ -26,7 +20,7 @@ BEGIN {
 
 ### Class init -----------------------------------------------------------------
 sub init {
-    my $self=shift;
+    my ($self)=@_;
     $self->{'element_tokens'} = {
         'rights'      => 'o-ex:rights',
         'context'     => 'o-ex:context',
@@ -46,10 +40,12 @@ sub init {
         'datetime'    => 'o-dd:datetime',
         'start'       => 'o-dd:start',
         'end'         => 'o-dd:end',
-        'interval'    => 'o-dd:interval',
+        'interval'    => 'o-dd:interval'
     };
-    $self->{key}=encode_base64($self->{key}); $self->{key}=~s/[\r\n]//g;
-    1
+    if ($self->{key}) {
+		$self->{key}=encode_base64($self->{key}); $self->{key}=~s/[\r\n]//g;
+	}
+    return 1;
 }
 
 
@@ -60,10 +56,10 @@ sub extension { '.dr' }
 
 ### Methods --------------------------------------------------------------------
 sub packit {
-    my $self=shift;
+    my ($self)=@_;
     my $res='';
     $res.='<?xml version="1.0" encoding="utf-8"?>'."\n";   # WBXML Version Number (1.3)
-    $res.='<!DOCTYPE o-ex:rights PUBLIC "-//OMA//DTD DRMREL 1.0//EN" "http://www.oma.org/dtd/dr">'."\n";  # Public Identifier (~//OMA//DTD DRMREL 1.0//EN)
+    $res.='<!DOCTYPE o-ex:rights PUBLIC "-//OMA//DTD REL 1.0//EN" "http://www.oma.org/dtd/dr">'."\n";  # Public Identifier (~//OMA//DTD REL 1.0//EN)
     
     my $content=$self->packin;
 
@@ -73,9 +69,7 @@ sub packit {
 
 #--- Support routines ----------------------------------------------------------
 sub _in_element {
-    my $self   =shift;
-    my $element=shift;
-    my $content=shift || '';
+    my ($self, $element, $content, $is_root)=@_;
     die "Unknown element token $element" unless $self->{element_tokens}{$element};
     my $res='<'.$self->{element_tokens}{$element};
     if ($content) {
@@ -83,28 +77,24 @@ sub _in_element {
     } else {
         $res.='/>'
     }
-    $res;
+    return $res;
 }
 sub _in_string {
-    my $self   =shift;
-    my $string=shift;
-    $string;
+    my ($self, $string)=@_;
+    return $string;
 }
 sub _in_opaque {
-    my $self   =shift;
-    my $data=shift;
-    $data;
+    my ($self,$data)=@_;
+    return $data;
 }
 1;
-
-
 
 
 __END__
 
 =head1 NAME
 
-OMA::Download::DRM::DRMCF::XML - XML representation of OMA DRM REL
+OMA::Download::DRM::DRMCF::XML - XML representation of Open Mobile Alliance Digital Rights Management Rights Expression Language 1.0
 
 =head1 TODO
 
@@ -115,19 +105,12 @@ OMA::Download::DRM::DRMCF
 
 =head1 AUTHOR
 
-Bernard Nauwelaerts, E<lt>bpn@localhostE<gt>
+Bernard Nauwelaerts, E<lt>bpgn@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
 Copyright (C) 2006 by Bernard Nauwelaerts
 
-THIS IS UNPUBLISHED PROPRIETARY SOFTWARE
-
-This code is licenced to run ONLY on author's computers.
-Utilisation, selling, distribution, modification or detention of this code are strictly prohibited.                                
-
-This enfringe commercial secrets and intellectual property laws.  
-
-In all cases this copyright notice must remain intact.
+Released under GPL licence
 
 =cut

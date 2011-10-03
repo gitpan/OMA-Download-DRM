@@ -1,15 +1,9 @@
-package OMA::Download::DRM::DRMREL::WBXML;
+package OMA::Download::DRM::REL::WBXML;
  #############################################################################
-# IT Development OMA WBXML DRMREL implementation                              #
+# IT Development OMA WBXML REL implementation                              #
 # Copyright (c) BPN 2006 All Rights reseved                                   #
-# Author  : Bernard Nauwelaerts <bpn\@it-development.be>                      #
-# LICENCE : THIS IS UNPUBLISHED PROPRIETARY SOFTWARE                          #
-#           This code is licenced to run ONLY on author's computers.          #
-#           Utilisation, selling, distribution, modification or detention of  #
-#           this code are strictly prohibited.                                #
-#           This enfringe commercial secrets and intellectual property laws.  #
-#                                                                             #
-#           In all cases these copyright and header must remain intact        #
+# Author  : Bernard Nauwelaerts <bpgn\@cpan.org>                              #
+# LICENCE : GPL                                                               #
 #                                                                             #
  ############################################################################
 #                                                                             #
@@ -68,7 +62,7 @@ sub init {
             end         => 0x16,
             interval    => 0x17,
     };
-    1
+    return 1;
 }
 
 ### Properties -----------------------------------------------------------------
@@ -77,10 +71,10 @@ sub extension { '.drc' }
 
 ### Methods --------------------------------------------------------------------
 sub packit {
-    my $self=shift;
+    my ($self)=@_;
     my $res='';
     $res.=pack("C", 3);                               # WBXML Version Number (1.3)
-    $res.=pack("C", 0x0e);                            # Public Identifier (~//OMA//DTD DRMREL 1.0//EN)
+    $res.=pack("C", 0x0e);                            # Public Identifier (~//OMA//DTD REL 1.0//EN)
     $res.=pack("C", 0x6a);                            # UTF-8
     $res.=pack("C", 0x00);                            # String Table Length (empty)
     
@@ -114,19 +108,17 @@ sub _in_element {
     if ($is_root) {
         $token|=0x80;
     }
-    pack("C", $token).$content.$term;
+    return pack("C", $token).$content.$term;
 }
 sub _in_string {
-    my $self   =shift;
-    my $string=shift;
+    my($self,$string)=@_;
     # 03 means "Inline String Follows"
     # 00 means "End of String"
-    pack("C", 03).$string.pack("C", 00);
+    return pack("C", 03).$string.pack("C", 00);
 }
 sub _in_opaque {
-    my $self   =shift;
-    my $data=shift;
-    pack("C", 0xc3).pack("C", length($data)).$data;
+    my($self,$data)=@_;
+    return pack("C", 0xc3).pack("C", length($data)).$data;
 }
 1;
 
@@ -136,27 +128,20 @@ __END__
 
 =head1 NAME
 
-OMA::Download::DRM::DRMCF::WBXML - WBXML representation of OMA DRM REL
+OMA::Download::DRM::REL::WBXML - WBXML representation of Open Mobile Alliance Digital Rights Management Rights Expression Language 1.0
 
 =head1 SEE ALSO
 
-OMA::Download::DRM::DRMCF
+OMA::Download::DRM::REL
 
 =head1 AUTHOR
 
-Bernard Nauwelaerts, E<lt>bpn@twi-31o2.orgE<gt>
+Bernard Nauwelaerts, E<lt>bgpn@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
 Copyright (C) 2006 by Bernard Nauwelaerts
 
-THIS IS UNPUBLISHED PROPRIETARY SOFTWARE
-
-This code is licenced to run ONLY on author's computers.
-Utilisation, selling, distribution, modification or detention of this code are strictly prohibited.                                
-
-This enfringe commercial secrets and intellectual property laws.  
-
-In all cases this copyright notice must remain intact.
+Released under GPL
 
 =cut

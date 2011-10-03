@@ -1,15 +1,9 @@
-package OMA::Download::DRM::DRMCF;
+package OMA::Download::DRM::CF;
  #############################################################################
-# IT Development OMA DRMCF implementation                                     #
+# IT Development OMA CF implementation                                     #
 # Copyright (c) BPN 2006 All Rights reseved                                   #
 # Author  : Bernard Nauwelaerts <bpn#it-development%be>                       #
-# LICENCE : THIS IS UNPUBLISHED PROPRIETARY SOFTWARE                          #
-#           This code is licenced to run ONLY on author's computers.          #
-#           Utilisation, selling, distribution, modification or detention of  #
-#           this code are strictly prohibited.                                #
-#           This enfringe commercial secrets and intellectual property laws.  #
-#                                                                             #
-#           In all cases these copyright and header must remain intact        #
+# LICENCE : GPL                                                               #
 #                                                                             #
  ############################################################################
 #                                                                             #
@@ -19,7 +13,6 @@ package OMA::Download::DRM::DRMCF;
 use strict;
 
 BEGIN {
-    use 5.8.7;
     use Crypt::Rijndael;
 }
 
@@ -31,7 +24,7 @@ sub new {
     for ('key', 'data', 'content-type', 'content-uri', 'Rights-Issuer', 'Content-Name') {
         die 'Need '.$_ unless $arg{$_};
     }
-    die "Key must be 128bit long" if length($arg{key}) != 16;
+    die "Key must be 128 bits long" if length($arg{key}) != 16;
     
     my $self={
         'key'          => $arg{key},
@@ -76,7 +69,7 @@ sub packit {
     #my $head=$self->_headers."\r\n";                  # Get headers
     my $head=$self->_headers;                          # Get headers
     
-    $res.=pack("C", 1);                               # DRMCF Version Number (1)
+    $res.=pack("C", 1);                               # CF Version Number (1)
     $res.=pack("C", length($self->{'content-type'})); # Length of ContentType field
     $res.=pack("C", length($self->{'content-uri'}));  # Length of ContentURI field
     $res.=$self->{'content-type'};                    # ContentType field
@@ -140,24 +133,24 @@ __END__
 
 =head1 NAME
 
-OMA::Download::DRM::DRMCF - Perl extension for OMA DRM Content Format implementation
+OMA::Download::DRM::CF - Perl extension for OMA DRM Content Format implementation
 
 =head1 SYNOPSIS
 
-    use OMA::Download::DRM::DRMCF;
-    my $cf = OMA::Download::DRM::DRMCF->new(
+    use OMA::Download::DRM::CF;
+    my $cf = OMA::Download::DRM::CF->new(
         ### Mandatory
         'key'                 => 'im9aazbjfgsorehf',
         'data'                => \$data,
         'content-type'        => 'image/jpeg',
         'content-uri'         => 'cid:image239872@foo.bar',
-        'Rights-Issuer'       => 'http://foo.bar/pics/image239872',
+        'Rights-Issuer'       => 'http://example.com/pics/image239872',
         'Content-Name'        => '"Kilimanjaro Uhuru Peak"',
         
-        ### Not Mandatory
+        ### Optional
         'Content-Description' => 'Nice image from Kilimanjaro',
         'Content-Vendor'      => 'IT Development Belgium',
-        'Icon-URI'            => 'http://foo.bar/icon.gif',
+        'Icon-URI'            => 'http://example.com/icon.gif',
     );
     
     my $res = $cf->packit;
@@ -168,7 +161,7 @@ Pack & encrypt OMA DRM content objects
 
 =head1 SEE ALSO
 
-* OMA-Download-DRMCF-V1_0-20040615-A
+* OMA-Download-CF-V1_0-20040615-A
 
 * WAP-230-WSP-20010705-a
 
@@ -178,16 +171,12 @@ Pack & encrypt OMA DRM content objects
 
 =head1 AUTHOR
 
-Bernard Nauwelaerts, E<lt>bpn#it-development%beE<gt>
+Bernard Nauwelaerts, E<lt>bpgn@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2006 by Bernard Nauwelaerts
+Copyright (C) 2006 by Bernard Nauwelaerts, IT Development Belgium
 
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.7 or,
-at your option, any later version of Perl 5 you may have available.
-
-In all cases this copyright notice must remain intact.
+Released under GPL licence
 
 =cut

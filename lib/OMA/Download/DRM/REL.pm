@@ -1,17 +1,33 @@
 package OMA::Download::DRM::REL;
- #############################################################################
-# IT Development OMA WBXML DRM REL implementation                             #
-# Copyright (c) BPN 2006 All Rights reseved                                   #
-# Author  : Bernard Nauwelaerts <bpn\@it-development.be>                      #
-# LICENCE : GPL                                                               #
-#                                                                             #
- ############################################################################
-#                                                                             #
-# Version : 1.00_03       Created : Jun 06 2006   Last Modified : Jun 06 2006 #
-#                                                                             #
- ############################################################################
 use strict;
-our @ISA;
+=head1 NAME
+
+OMA::Download::DRM::REL - Perl extension for packing REL objects according to the OMA DRM 1.0 specification.
+
+=head1 SYNOPSIS
+
+    use OMA::Download::DRM::REL;
+    
+    my $rel = OMA::Download::DRM::REL->new('XML' || 'WBXML',
+        
+        ### Mandatory
+        'uid'                 => 'cid:image239872@example.com',
+        'permission'          => 'display',   					# Can be 'display', 'play', 'execute' or 'print'
+        
+        ### Optional
+        'key'                 => 'im9aazbjfgsorehf',
+        'count'               => 3
+    );
+    
+    my $res = $rel->packit;
+
+=head1 DESCRIPTION
+
+Open Mobile Alliance Digital Rights Management Rights Expression Language implementation
+
+This is a partial implementation - Needs to be completed
+
+=cut
 
 BEGIN {
     use 5.8.7;
@@ -25,19 +41,57 @@ sub new {
         'uid'            => $arg{'uid'},
         'permission'     => $arg{'permission'},
         'count'          => $arg{'count'},
-        'key'            => $arg{key} || undef,
+        'key'            => $arg{'key'} || undef,
     };
     $self=bless $self, $class;
 
 	eval ('use OMA::Download::DRM::REL::'.$encoding);
-    push @ISA, 'OMA::Download::DRM::REL::'.$encoding;
+    push @OMA::Download::DRM::REL::ISA, 'OMA::Download::DRM::REL::'.$encoding;
     
     $self->init;
     
     $self;
 }
+### Properties -----------------------------------------------------------------
+=head1 PROPERTIES
 
+=over 4
 
+=item B<uid> - Unique identifier
+
+=cut
+sub uid {
+    my ($self, $val)=@_;
+    $self->{uid} = $val if $val;
+    $self->{uid}
+}
+
+=item B<permission> - Permission : can be 'display', 'play', 'execute' or 'print' 
+
+=cut
+sub permission {
+    my ($self, $val)=@_;
+    $self->{permission} = $val if $val;
+    $self->{permission}
+}
+
+=item B<count> - Download Name
+
+=cut
+sub name {
+    my ($self, $val)=@_;
+    $self->{name} = $val if $val;
+    $self->{name}
+}
+=back
+
+=head1 METHODS
+
+=over 4
+
+=item B<packin> - Packs rights object
+
+=cut
 ### Methods --------------------------------------------------------------------
 sub packin {
     my $self=shift;
@@ -65,32 +119,7 @@ sub packin {
 1;
 __END__
 
-=head1 NAME
-
-OMA::Download::DRM::REL - Perl extension for OMA Rights Expression Language 1.0
-
-=head1 SYNOPSIS
-
-    use OMA::Download::DRM::REL;
-    
-    my $rel = OMA::Download::DRM::REL->new('XML' || 'WBXML',
-        
-        ### Mandatory
-        'key'                 => 'im9aazbjfgsorehf',
-        'uid'                 => 'cid:image239872@example.com',
-        'permission'          => 'display',   					# Can be 'display', 'play', 'execute' or 'print'
-        
-        ### Optional
-        'count'               => 3,        
-    );
-    
-    my $res = $rel->packit;
-
-=head1 DESCRIPTION
-
-OMA DRM Rights Expression Language implementation
-
-This is a partial implementation - Needs to be completed
+=back
 
 =head1 TODO
 

@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 BEGIN {
-    $OMA::Download::DRM::VERSION = '1.00.05';  
+    $OMA::Download::DRM::VERSION = '1.00.06';  
 }
 
 sub new {
@@ -153,11 +153,16 @@ This module encodes data objects according to the Open Mobile Alliance Digital R
 =head1 SEE ALSO
 
 OMA::Download::DRM::REL
+
 OMA::Download::DRM::CF
 
 OMA DRM 1.0 Specifications
 
 =head1 REVISION INFORMATION
+
+1.00.06		Documentation update
+
+1.00.05		Documentation update
 
 1.00.04		First public release
 

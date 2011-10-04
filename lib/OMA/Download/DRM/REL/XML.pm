@@ -1,15 +1,4 @@
 package OMA::Download::DRM::REL::XML;
- #############################################################################
-# IT Development OMA XML REL implementation                                #
-# Copyright (c) BPN 2006 All Rights reseved                                   #
-# Author  : Bernard Nauwelaerts <bpn\@it-development.be>                      #
-# LICENCE : GPL                                                               #
-#                                                                             #
- ############################################################################
-#                                                                             #
-# Version : 1.00_02       Created : Jun 06 2006   Last Modified : Jun 06 2006 #
-#                                                                             #
- ############################################################################
 use strict;
 
 BEGIN {
@@ -88,20 +77,19 @@ sub _in_opaque {
     return $data;
 }
 1;
-
-
 __END__
 
 =head1 NAME
 
-OMA::Download::DRM::DRMCF::XML - XML representation of Open Mobile Alliance Digital Rights Management Rights Expression Language 1.0
+OMA::Download::DRM::REL::XML - XML representation of the OMA DRM REL 1.0
 
-=head1 TODO
+=head1 DESCRIPTION
 
+XML representation of the Open Mobile Alliance Digital Rights Management Rights Expression Language 1.0
 
 =head1 SEE ALSO
 
-OMA::Download::DRM::DRMCF
+OMA::Download::DRM::REL
 
 =head1 AUTHOR
 

@@ -1,17 +1,36 @@
 package OMA::Download::DRM::CF;
- #############################################################################
-# IT Development OMA CF implementation                                     #
-# Copyright (c) BPN 2006 All Rights reseved                                   #
-# Author  : Bernard Nauwelaerts <bpn#it-development%be>                       #
-# LICENCE : GPL                                                               #
-#                                                                             #
- ############################################################################
-#                                                                             #
-# Version : 1.00_03       Created : Jun 06 2006   Last Modified : Jun 06 2006 #
-#                                                                             #
- ############################################################################
 use strict;
+=head1 NAME
 
+OMA::Download::DRM::CF - Perl extension for formatting content objects according to the OMA DRM 1.0 specification
+
+=head1 SYNOPSIS
+
+    use OMA::Download::DRM::CF;
+	
+    my $cf = OMA::Download::DRM::CF->new(
+        
+        ### Mandatory
+        'key'                 => 'im9aazbjfgsorehf',
+        'data'                => \$data,
+        'content-type'        => 'image/jpeg',
+        'content-uri'         => 'cid:image239872@foo.bar',
+        'Rights-Issuer'       => 'http://example.com/pics/image239872',
+        'Content-Name'        => '"Kilimanjaro Uhuru Peak"',
+        
+        ### Optional
+        'Content-Description' => 'Nice image from Kilimanjaro',
+        'Content-Vendor'      => 'IT Development Belgium',
+        'Icon-URI'            => 'http://example.com/icon.gif',
+    );
+    
+    my $res = $cf->packit;
+
+=head1 DESCRIPTION
+
+Packs & encrypts content objects  according to the Open Mobile Alliance Digital Rights Management 1.0 specification
+
+=cut
 BEGIN {
     use Crypt::Rijndael;
 }
@@ -24,7 +43,7 @@ sub new {
     for ('key', 'data', 'content-type', 'content-uri', 'Rights-Issuer', 'Content-Name') {
         die 'Need '.$_ unless $arg{$_};
     }
-    die "Key must be 128 bits long" if length($arg{key}) != 16;
+    die "Key must be 128-bit long" if length($arg{key}) != 16;
     
     my $self={
         'key'          => $arg{key},
@@ -48,15 +67,76 @@ sub new {
 
 
 
-### Properties -----------------------------------------------------------------
+=head1 Properties 
+
+=over 4
+
+=item B<key> - 128-bit ASCII encryption key
+
+=cut
+sub key {
+    my($self, $val)=@_;
+	if(defined $val && length($val) == 16) {
+		$self->{key} = $val ;
+	}
+	$self->{key};
+}
+
+=item B<data> - Reference to the binary content data
+
+=cut
+sub data {
+    my($self, $val)=@_;
+	$self->{data} = $val if defined $val;
+	$self->{data};
+}
+
+=item B<content_type> - Content MIME type
+
+=cut
+sub content_type {
+    my($self, $val)=@_;
+	$self->{'content-type'} = $val if defined $val;
+	$self->{'content-type'};
+}
+
+=item B<content_uri> - Content URI
+
+=cut
+sub content_uri {
+    my($self, $val)=@_;
+	$self->{'content_uri'} = $val if defined $val;
+	$self->{'content_uri'};
+}
+
+=item B<header> - Get or set a header
+
+=cut
 sub header {
-    my $self=shift;
-    my $key=shift;
+    my($self, $key, $val)=@_;
+	$self->{headers}{$key} = $val if defined $val;
     $self->{headers}{$key} || undef;
 }
+
+=item B<mime> - Returns the formatted content MIME type
+
+=cut
 sub mime      { 'application/vnd.oma.drm.content' }
+
+=item B<extension> - Returns the formatted content file extension
+
+=cut
 sub extension { '.dcf' }
-### Methods --------------------------------------------------------------------
+
+=back
+
+=head1 METHODS 
+
+=over 4
+
+=item B<packit> - Formats the content object
+
+=cut
 sub packit {
     my $self=shift;
     my $res='';
@@ -126,38 +206,8 @@ sub _uint2uintvar {
 
 1;
 
-
-
-
 __END__
-
-=head1 NAME
-
-OMA::Download::DRM::CF - Perl extension for OMA DRM Content Format implementation
-
-=head1 SYNOPSIS
-
-    use OMA::Download::DRM::CF;
-    my $cf = OMA::Download::DRM::CF->new(
-        ### Mandatory
-        'key'                 => 'im9aazbjfgsorehf',
-        'data'                => \$data,
-        'content-type'        => 'image/jpeg',
-        'content-uri'         => 'cid:image239872@foo.bar',
-        'Rights-Issuer'       => 'http://example.com/pics/image239872',
-        'Content-Name'        => '"Kilimanjaro Uhuru Peak"',
-        
-        ### Optional
-        'Content-Description' => 'Nice image from Kilimanjaro',
-        'Content-Vendor'      => 'IT Development Belgium',
-        'Icon-URI'            => 'http://example.com/icon.gif',
-    );
-    
-    my $res = $cf->packit;
-
-=head1 DESCRIPTION
-
-Pack & encrypt OMA DRM content objects
+=back
 
 =head1 SEE ALSO
 
@@ -169,6 +219,8 @@ Pack & encrypt OMA DRM content objects
 
 * Crypt::Rijndael
 
+* RFC2630 6.3
+
 =head1 AUTHOR
 
 Bernard Nauwelaerts, E<lt>bpgn@cpan.orgE<gt>
@@ -177,6 +229,6 @@ Bernard Nauwelaerts, E<lt>bpgn@cpan.orgE<gt>
 
 Copyright (C) 2006 by Bernard Nauwelaerts, IT Development Belgium
 
-Released under GPL licence
+Released under the GPL.
 
 =cut

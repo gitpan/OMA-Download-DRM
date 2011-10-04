@@ -128,7 +128,11 @@ __END__
 
 =head1 NAME
 
-OMA::Download::DRM::REL::WBXML - WBXML representation of Open Mobile Alliance Digital Rights Management Rights Expression Language 1.0
+OMA::Download::DRM::REL::WBXML - WBXML representation of OMA DRM REL 1.0
+
+=head1 DESCRIPTION
+
+WBXML representation of the Open Mobile Alliance Digital Rights Management Rights Expression Language 1.0
 
 =head1 SEE ALSO
 

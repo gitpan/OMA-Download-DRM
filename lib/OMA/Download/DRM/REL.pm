@@ -4,23 +4,6 @@ use strict;
 
 OMA::Download::DRM::REL - Perl extension for packing REL objects according to the OMA DRM 1.0 specification.
 
-=head1 SYNOPSIS
-
-    use OMA::Download::DRM::REL;
-    
-    my $rel = OMA::Download::DRM::REL->new('XML' || 'WBXML',
-        
-        ### Mandatory
-        'uid'                 => 'cid:image239872@example.com',
-        'permission'          => 'display',   					# Can be 'display', 'play', 'execute' or 'print'
-        
-        ### Optional
-        'key'                 => 'im9aazbjfgsorehf',
-        'count'               => 3
-    );
-    
-    my $res = $rel->packit;
-
 =head1 DESCRIPTION
 
 Open Mobile Alliance Digital Rights Management Rights Expression Language implementation
@@ -32,10 +15,27 @@ This is a partial implementation - Needs to be completed
 BEGIN {
     use 5.8.7;
 }
+=head1 CONSTRUCTOR
 
+=head2 new
+
+  # $class can be OMA::Download::DRM::REL::XML or OMA::Download::DRM::REL::WBXML
+
+  my $rel=$class->new(
+      
+        ### Mandatory
+        'uid'                 => 'cid:image239872@example.com',
+        'permission'          => 'display',   					# Can be either 'display', 'play', 'execute' or 'print'
+        
+        ### Optional
+        'key'                 => 'im9aazbjfgsorehf',
+        'count'               => 3
+  );
+
+=cut
 ### Class constructor ----------------------------------------------------------
 sub new {
-    my ($class, $encoding, %arg)=@_;
+    my ($class, %arg)=@_;
     die "Need Permission argument" unless $arg{'permission'};
     my $self={
         'uid'            => $arg{'uid'},
@@ -44,20 +44,17 @@ sub new {
         'key'            => $arg{'key'} || undef,
     };
     $self=bless $self, $class;
-
-	eval ('use OMA::Download::DRM::REL::'.$encoding);
-    push @OMA::Download::DRM::REL::ISA, 'OMA::Download::DRM::REL::'.$encoding;
-    
-    $self->init;
-    
+	$self->_init;
     $self;
 }
 ### Properties -----------------------------------------------------------------
 =head1 PROPERTIES
 
-=over 4
+=head2 uid
 
-=item B<uid> - Unique identifier
+Returns the unique identifier
+
+  print $rel->uid;
 
 =cut
 sub uid {
@@ -66,7 +63,13 @@ sub uid {
     $self->{uid}
 }
 
-=item B<permission> - Permission : can be 'display', 'play', 'execute' or 'print' 
+=head2 permission
+
+Get or set permission type. Can be either 'display', 'play', 'execute' or 'print'
+ 
+ print $rel->permission;
+
+ $rel->permission('display');
 
 =cut
 sub permission {
@@ -75,26 +78,38 @@ sub permission {
     $self->{permission}
 }
 
-=item B<count> - Download Name
+=head2 key
+
+Get or set the encryption key
+
+  print $rel->key;
+  
+  $rel->key('0123456789ABCDEF');
 
 =cut
-sub name {
+sub key {
     my ($self, $val)=@_;
-    $self->{name} = $val if $val;
-    $self->{name}
+    $self->{uid} = $val if defined $val;
+    $self->{uid}
 }
-=back
 
-=head1 METHODS
+=head2 count
 
-=over 4
+Get or set accesses count limit
 
-=item B<packin> - Packs rights object
+  print $rel->count;
+
+  $rel->count(3);
 
 =cut
-### Methods --------------------------------------------------------------------
-sub packin {
-    my $self=shift;
+sub count {
+    my ($self, $val)=@_;
+    $self->{count} = $val if defined $val;
+    $self->{count}
+}
+### Private methods --------------------------------------------------------------------
+sub _packin {
+    my $self=$_[0];
     
     # version
     my $context=$self->_in_element('context', $self->_in_element('version', $self->_in_string('1.0')));
@@ -118,9 +133,6 @@ sub packin {
 
 1;
 __END__
-
-=back
-
 =head1 TODO
 
 Use more than one permission, and other constraints than count
@@ -139,8 +151,8 @@ Bernard Nauwelaerts, E<lt>bpn@localhostE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2006 by Bernard Nauwelaerts, IT Development Belgium
+Copyright (C) 2006 by Bernard Nauwelaerts.
 
-Released under GPL licence.
+Released under the GPL.
 
 =cut

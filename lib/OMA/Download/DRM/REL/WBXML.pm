@@ -1,24 +1,81 @@
 package OMA::Download::DRM::REL::WBXML;
- #############################################################################
-# IT Development OMA WBXML REL implementation                              #
-# Copyright (c) BPN 2006 All Rights reseved                                   #
-# Author  : Bernard Nauwelaerts <bpgn\@cpan.org>                              #
-# LICENCE : GPL                                                               #
-#                                                                             #
- ############################################################################
-#                                                                             #
-# Version : 1.00_02       Created : Jun 06 2006   Last Modified : Jun 06 2006 #
-#                                                                             #
- ############################################################################
 use strict;
-
 BEGIN {
-    use 5.8.7;
+    use OMA::Download::DRM::REL;
+	push @OMA::Download::DRM::REL::WBXML::ISA, 'OMA::Download::DRM::REL';
+}
+=head1 NAME
+
+OMA::Download::DRM::REL::WBXML - WBXML representation of OMA DRM REL 1.0
+
+=head1 DESCRIPTION
+
+WBXML representation of the Open Mobile Alliance Digital Rights Management Rights Expression Language 1.0. Used e.g. with Wap Push.
+
+=head1 SYNOPSIS
+
+  use OMA::Download::DRM::REL::WBXML;
+
+=head1 CONSTRUCTOR
+
+  my $rel=OMA::Download::DRM::REL::WBXML->new(%args);
+
+=head1 PROPERTIES
+
+=head2 mime
+
+Returns the WBXML rights object MIME type
+
+  print $rel->mime;
+
+=cut
+sub mime      { 'application/vnd.oma.drm.rights+wbxml' }
+
+=head2 extension
+
+Returns the WBXML rights object extension
+
+  print $rel->extension;
+
+=cut
+sub extension { '.drc' }
+
+
+=head1 METHODS
+
+=head2 packit
+
+Packs data using WBXML format
+
+  print $rel->packit;
+
+=cut
+sub packit {
+    my ($self)=@_;
+    my $res='';
+    
+	# header
+	$res.=pack("C", 3);                               # WBXML Version Number (1.3)
+    $res.=pack("C", 0x0e);                            # Public Identifier (~//OMA//DTD REL 1.0//EN)
+    $res.=pack("C", 0x6a);                            # UTF-8
+    $res.=pack("C", 0x00);                            # String Table Length (empty)
+    
+    # rights element attributes
+    my $rattr='';
+    #$rattr.=pack("C", 0xC5); # <o-ex:rights
+    $rattr.=pack("C", 0x05); # xmlns:o-ex=
+    $rattr.=pack("C", 0x85); # "http://odrl.net/1.1/ODRL-EX"
+    $rattr.=pack("C", 0x06); # xmlns:o-dd=
+    $rattr.=pack("C", 0x86); # "http://odrl.net/1.1/ODRL-DD"
+    $rattr.=pack("C", 0x07); # xmlns:o-ds=
+    $rattr.=pack("C", 0x87); # "http://www.w3.org/2000/09/xmldsig#/"
+    $rattr.=pack("C", 0x01); # >
+	
+    return $res.$self->_in_element('rights', $rattr.$self->_packin, 1);
 }
 
-
-### Class init -----------------------------------------------------------------
-sub init {
+#--- Support routines ----------------------------------------------------------
+sub _init {
     my $self=shift;
 #    $self->{element_tokens} = {
 #            rights      => 0xc5,
@@ -64,37 +121,6 @@ sub init {
     };
     return 1;
 }
-
-### Properties -----------------------------------------------------------------
-sub mime      { 'application/vnd.oma.drm.rights+wbxml' }
-sub extension { '.drc' }
-
-### Methods --------------------------------------------------------------------
-sub packit {
-    my ($self)=@_;
-    my $res='';
-    $res.=pack("C", 3);                               # WBXML Version Number (1.3)
-    $res.=pack("C", 0x0e);                            # Public Identifier (~//OMA//DTD REL 1.0//EN)
-    $res.=pack("C", 0x6a);                            # UTF-8
-    $res.=pack("C", 0x00);                            # String Table Length (empty)
-    
-    my $content = $self->packin;
-    
-    # rights element attributes
-    my $rattr='';
-    #$rattr.=pack("C", 0xC5); # <o-ex:rights
-    $rattr.=pack("C", 0x05); # xmlns:o-ex=
-    $rattr.=pack("C", 0x85); # "http://odrl.net/1.1/ODRL-EX"
-    $rattr.=pack("C", 0x06); # xmlns:o-dd=
-    $rattr.=pack("C", 0x86); # "http://odrl.net/1.1/ODRL-DD"
-    $rattr.=pack("C", 0x07); # xmlns:o-ds=
-    $rattr.=pack("C", 0x87); # "http://www.w3.org/2000/09/xmldsig#/"
-    $rattr.=pack("C", 0x01); # >
-   # return $res.$rattr.$content.pack("C", 01);
-    return $res.$self->_in_element('rights', $rattr.$content, 1);
-}
-
-#--- Support routines ----------------------------------------------------------
 sub _in_element {
     my ($self, $element, $content, $is_root)=@_;
     die "Unknown element token $element" unless $self->{element_tokens}{$element};
@@ -126,13 +152,6 @@ sub _in_opaque {
 
 __END__
 
-=head1 NAME
-
-OMA::Download::DRM::REL::WBXML - WBXML representation of OMA DRM REL 1.0
-
-=head1 DESCRIPTION
-
-WBXML representation of the Open Mobile Alliance Digital Rights Management Rights Expression Language 1.0
 
 =head1 SEE ALSO
 
@@ -144,8 +163,8 @@ Bernard Nauwelaerts, E<lt>bgpn@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2006 by Bernard Nauwelaerts
+Copyright (C) 2006 by Bernard Nauwelaerts.
 
-Released under GPL
+Released under the GPL.
 
 =cut

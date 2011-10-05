@@ -4,6 +4,8 @@ MANIFEST
 README
 LICENCE
 t/OMA-Download-DRM.t
+t/pod.t
+t/pod-coverage.t
 lib/OMA/Download/DRM.pm
 lib/OMA/Download/DRM/CF.pm
 lib/OMA/Download/DRM/REL.pm

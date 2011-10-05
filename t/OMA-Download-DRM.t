@@ -5,7 +5,7 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 use lib 'lib/';
-use Test::More tests => 1;
+use Test::More tests => 4;
 BEGIN { use_ok('OMA::Download::DRM') };
 
 #########################
@@ -16,23 +16,20 @@ BEGIN { use_ok('OMA::Download::DRM') };
     my $data=_readfile('image.jpg');
 
     my $drm = OMA::Download::DRM->new(
-        ### Mandatory
         'key'                 => 'im9aazbjfgsorehf',
         'data'                => \$data,
         'content-type'        => 'image/jpeg',
-        'cid'                 => 'image239872@foo.bar',
-        'Rights-Issuer'       => 'http://example.com/pics/image239872',
-        'Content-Name'        => '"Chinese Sign"',
-        
-        ### Optional
-        'Content-Description' => 'Nice image',
-        'Content-Vendor'      => 'IT Development Belgium',
-        'Icon-URI'            => 'http://example.com/icon.gif',
+        'domain'              => 'example.com'
     );
     
     my $res = $drm->combined('display');
+	ok(1);
+	$res = $drm->separate_content('http://example.com/pics/image239872', 'Chinese Sign');
+	ok(2);
     
-
+	$res = $drm->separate_rights('display', count => 3);
+	ok(3);
+	
 sub _readfile {
     my $file = shift;
     my $buffer='';
@@ -45,3 +42,4 @@ sub _readfile {
     close T;
     $o;
 }
+1;

@@ -1,41 +1,41 @@
 package OMA::Download::DRM::CF;
 use strict;
+BEGIN {
+    use Crypt::Rijndael;
+}
 =head1 NAME
 
 OMA::Download::DRM::CF - Perl extension for formatting content objects according to the OMA DRM 1.0 specification
 
+=head1 DESCRIPTION
+
+Packs & encrypts content objects  according to the Open Mobile Alliance Digital Rights Management 1.0 specification
+
 =head1 SYNOPSIS
 
     use OMA::Download::DRM::CF;
+
+=head1 CONSTRUCTOR
+
+=head2 new
 	
     my $cf = OMA::Download::DRM::CF->new(
         
         ### Mandatory
-        'key'                 => 'im9aazbjfgsorehf',
+        'key'                 => '0123456789ABCDEF',
         'data'                => \$data,
-        'content-type'        => 'image/jpeg',
+        'content-type'        => 'image/gif',
         'content-uri'         => 'cid:image239872@foo.bar',
         'Rights-Issuer'       => 'http://example.com/pics/image239872',
-        'Content-Name'        => '"Kilimanjaro Uhuru Peak"',
+        'Content-Name'        => 'Kilimanjaro Uhuru Peak',
         
         ### Optional
         'Content-Description' => 'Nice image from Kilimanjaro',
         'Content-Vendor'      => 'IT Development Belgium',
         'Icon-URI'            => 'http://example.com/icon.gif',
     );
-    
-    my $res = $cf->packit;
-
-=head1 DESCRIPTION
-
-Packs & encrypts content objects  according to the Open Mobile Alliance Digital Rights Management 1.0 specification
 
 =cut
-BEGIN {
-    use Crypt::Rijndael;
-}
-
-
 ### Class constructor ----------------------------------------------------------
 sub new {
     my ($class, %arg)=@_;
@@ -67,11 +67,15 @@ sub new {
 
 
 
-=head1 Properties 
+=head1 PROPERTIES
 
-=over 4
+=head2 key
 
-=item B<key> - 128-bit ASCII encryption key
+get or set the 128-bit ASCII encryption key
+
+  print $cf->key;
+  
+  $cf->key('0123456789ABCDEF');
 
 =cut
 sub key {
@@ -82,7 +86,13 @@ sub key {
 	$self->{key};
 }
 
-=item B<data> - Reference to the binary content data
+=head2 data
+
+Get or set the reference to the binary content data
+
+  print ${$cf->data};
+  
+  $cf->data(\$data);
 
 =cut
 sub data {
@@ -91,7 +101,13 @@ sub data {
 	$self->{data};
 }
 
-=item B<content_type> - Content MIME type
+=head2 content_type
+
+Get or set the content MIME type
+
+  print $cf->content_type;
+  
+  $cf->content_type('image/gif');
 
 =cut
 sub content_type {
@@ -100,7 +116,13 @@ sub content_type {
 	$self->{'content-type'};
 }
 
-=item B<content_uri> - Content URI
+=head2 content_uri
+
+Get or set the content URI
+
+  print $cf->content_uri;
+  
+  $cf->content_type('image12345@example.com');
 
 =cut
 sub content_uri {
@@ -109,7 +131,13 @@ sub content_uri {
 	$self->{'content_uri'};
 }
 
-=item B<header> - Get or set a header
+=head2 header
+
+Get or set a header
+
+  print $cf->header('Content-Vendor');
+  
+  $cf->header('Content-Vendor', 'My Company');
 
 =cut
 sub header {
@@ -118,27 +146,35 @@ sub header {
     $self->{headers}{$key} || undef;
 }
 
-=item B<mime> - Returns the formatted content MIME type
+=head2 mime
+
+Returns the formatted content MIME type
+
+  print $cf->mime;
 
 =cut
 sub mime      { 'application/vnd.oma.drm.content' }
 
-=item B<extension> - Returns the formatted content file extension
+=head2 extension
+
+Returns the formatted content file extension
+
+  print $cf->extension;
 
 =cut
 sub extension { '.dcf' }
 
-=back
-
 =head1 METHODS 
 
-=over 4
+=head2 packit
 
-=item B<packit> - Formats the content object
+Formats the content object
+
+  print $cf->packit;
 
 =cut
 sub packit {
-    my $self=shift;
+    my $self=$_[0];
     my $res='';
     
     my $cdat='';                                      # Encrypted data variable
@@ -166,22 +202,19 @@ sub packit {
 
 #--- Support routines ----------------------------------------------------------
 sub _crypt {
-    my $self=shift;
-    my $data=shift;
-    my $cdat=shift;    
+    my($self,$data,$cdat)=@_;    
     my $cipher = Crypt::Rijndael->new($self->{'key'}, Crypt::Rijndael::MODE_CBC);
     $$cdat = $cipher->encrypt($$data._padding($data, $self->{'block-size'}));
     1
 }
 sub _padding {                                        # Fill in missed bytes
-    my $data=shift;
-    my $blocksize=shift;
+    my($data,$blocksize)=@_;
     ### rfc2630 6.3
     my $numpad = $blocksize - (length($$data) % $blocksize);
     pack("C", $numpad) x $numpad;
 }
 sub _headers {
-    my $self=shift;
+    my $self=$_[0];
     my $res='';
     for (keys %{$self->{headers}}) {
         if ($self->{headers}{$_}) {
@@ -192,7 +225,7 @@ sub _headers {
 }
 sub _uint2uintvar {
     ### Lightweight algorithm implementation
-    my $int=shift || return pack("C", 0);
+    my $int=$_[0] || return pack("C", 0);
     my $lst=0;                                    # We begin with the last octet
     my $res='';                                   
     while ($int > 0) {
@@ -207,7 +240,6 @@ sub _uint2uintvar {
 1;
 
 __END__
-=back
 
 =head1 SEE ALSO
 
@@ -227,7 +259,7 @@ Bernard Nauwelaerts, E<lt>bpgn@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2006 by Bernard Nauwelaerts, IT Development Belgium
+Copyright (C) 2006 by Bernard Nauwelaerts.
 
 Released under the GPL.
 
